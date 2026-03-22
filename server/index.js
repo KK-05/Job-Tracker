@@ -15,6 +15,7 @@ const resumeRoutes = require('./routes/resume');
 const aiRoutes = require('./routes/ai');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 
 // ─── Global Middleware ──────────────────────────────────

@@ -50,7 +50,7 @@ export default function AIInsightPanel({
           <h3 className="font-semibold text-slate-700 dark:text-slate-200">
             AI Insights
           </h3>
-          <p className="text-xs text-slate-400">Powered by GPT-4</p>
+          <p className="text-xs text-slate-400">Powered by Gemini</p>
         </div>
       </div>
 

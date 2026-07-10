@@ -2,7 +2,7 @@
 
 A full-stack SaaS application for tracking job applications, managing resumes, getting AI-powered resume feedback, and viewing analytics on your job search.
 
-![Tech Stack](https://img.shields.io/badge/Next.js-black?logo=next.js) ![Express](https://img.shields.io/badge/Express-000?logo=express) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?logo=postgresql&logoColor=white) ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/Tailwind-06B6D4?logo=tailwindcss&logoColor=white)
+![Tech Stack](https://img.shields.io/badge/Next.js-black?logo=next.js) ![Express](https://img.shields.io/badge/Express-000?logo=express) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?logo=postgresql&logoColor=white) ![Gemini](https://img.shields.io/badge/Gemini-8E75B2?logo=googlegemini&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/Tailwind-06B6D4?logo=tailwindcss&logoColor=white)
 
 ## ✨ Features
 
@@ -10,7 +10,7 @@ A full-stack SaaS application for tracking job applications, managing resumes, g
 - **Application CRUD** — Track companies, roles, statuses, and job descriptions
 - **Notes** — Add notes per application
 - **Resume Upload** — Upload to Cloudinary (PDF/Word)
-- **AI Resume Analysis** — GPT-4 powered strengths/weaknesses/suggestions
+- **AI Resume Analysis** — Gemini-powered strengths/weaknesses/suggestions
 - **AI Job Match Scoring** — Compare resume to job description (0–100 score)
 - **Analytics Dashboard** — Charts for applications/month, status distribution, rates
 - **Responsive UI** — Dark mode, glassmorphism, gradient accents
@@ -19,10 +19,10 @@ A full-stack SaaS application for tracking job applications, managing resumes, g
 
 | Layer     | Technology                       |
 |-----------|----------------------------------|
-| Frontend  | Next.js 15 (App Router), Tailwind CSS, Zustand, Recharts |
+| Frontend  | Next.js 16 (App Router), Tailwind CSS, Zustand, Recharts |
 | Backend   | Node.js, Express                 |
 | Database  | PostgreSQL                       |
-| AI        | OpenAI GPT-4                     |
+| AI        |  Google Gemini (gemini-2.5-pro / gemini-2.5-flash) |
 | Storage   | Cloudinary                       |
 | Auth      | JWT + bcrypt                     |
 
@@ -53,7 +53,7 @@ job-tracker/
 
 - Node.js 18+
 - PostgreSQL database
-- OpenAI API key
+- Google Gemini API key (from Google AI Studio)
 - Cloudinary account
 
 ### 1. Clone & Install
@@ -84,7 +84,7 @@ psql -d job_tracker -f server/db/schema.sql
 PORT=5000
 DATABASE_URL=postgresql://user:pass@localhost:5432/job_tracker
 JWT_SECRET=your-secret-key
-OPENAI_API_KEY=sk-...
+GEMINI_API_KEY=...
 CLOUDINARY_CLOUD_NAME=...
 CLOUDINARY_API_KEY=...
 CLOUDINARY_API_SECRET=...

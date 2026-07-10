@@ -63,6 +63,7 @@ export const noteApi = {
     api.post('/notes', data),
   getByApplication: (applicationId: string) =>
     api.get(`/notes/${applicationId}`),
+  delete: (id: string) => api.delete(`/notes/${id}`),
 };
 
 // ─── Resume ─────────────────────────────────────────────

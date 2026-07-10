@@ -31,7 +31,13 @@ interface AnalyticsData {
   status_distribution: { status: string; count: number }[];
 }
 
-const PIE_COLORS = ['#8b5cf6', '#f59e0b', '#10b981', '#ef4444'];
+const STATUS_COLORS: Record<string, string> = {
+  Applied: '#3b82f6',
+  Interview: '#f59e0b',
+  Offer: '#10b981',
+  Rejected: '#ef4444',
+};
+const FALLBACK_COLOR = '#8b5cf6';
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -194,7 +200,7 @@ export default function AnalyticsPage() {
                   {data.status_distribution.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={PIE_COLORS[index % PIE_COLORS.length]}
+                      fill={STATUS_COLORS[data.status_distribution[index].status] || FALLBACK_COLOR}
                     />
                   ))}
                 </Pie>
@@ -239,7 +245,7 @@ export default function AnalyticsPage() {
                   {data.status_distribution.map((_, index) => (
                     <Cell
                       key={`bar-${index}`}
-                      fill={PIE_COLORS[index % PIE_COLORS.length]}
+                      fill={STATUS_COLORS[data.status_distribution[index].status] || FALLBACK_COLOR}
                     />
                   ))}
                 </Bar>

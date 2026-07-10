@@ -19,6 +19,11 @@ const NoteModel = {
     return result.rows;
   },
 
+  async findById(id) {
+    const result = await pool.query(`SELECT * FROM notes WHERE id = $1`, [id]);
+    return result.rows[0] || null;
+  },
+
   async delete(id) {
     const result = await pool.query(
       `DELETE FROM notes WHERE id = $1 RETURNING id`,

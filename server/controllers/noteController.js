@@ -35,4 +35,23 @@ const getNotes = asyncHandler(async (req, res) => {
   res.json({ success: true, data: notes });
 });
 
-module.exports = { createNote, getNotes };
+/**
+ * DELETE /api/notes/:id
+ */
+const deleteNote = asyncHandler(async (req, res) => {
+  const note = await NoteModel.findById(req.params.id);
+  if (!note) {
+    throw ApiError.notFound('Note not found');
+  }
+
+  // Verify the note's application belongs to the authenticated user
+  const application = await ApplicationModel.findByIdAndUser(note.application_id, req.user.id);
+  if (!application) {
+    throw ApiError.notFound('Note not found');
+  }
+
+  await NoteModel.delete(req.params.id);
+  res.json({ success: true, message: 'Note deleted' });
+});
+
+module.exports = { createNote, getNotes, deleteNote };

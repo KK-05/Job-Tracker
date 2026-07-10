@@ -14,6 +14,12 @@ const noteRoutes = require('./routes/notes');
 const resumeRoutes = require('./routes/resume');
 const aiRoutes = require('./routes/ai');
 
+// ─── Startup Safety Checks ──────────────────────────────
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  console.error('❌ JWT_SECRET must be set in production. Refusing to start.');
+  process.exit(1);
+}
+
 const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;

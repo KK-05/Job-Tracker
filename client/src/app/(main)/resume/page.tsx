@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 export default function ResumePage() {
-  const { resumes, fetchResumes, uploadResume, updateParsedText, deleteResume, isLoading } =
+  const { resumes, fetchResumes, uploadResume, updateParsedText, deleteResume, isLoading, error } =
     useResumeStore();
 
   const [file, setFile] = useState<File | null>(null);
@@ -29,6 +29,7 @@ export default function ResumePage() {
     weaknesses: string[];
     suggestions: string[];
   } | null>(null);
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
 
   // Editing parsed text
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -55,11 +56,12 @@ export default function ResumePage() {
   const handleAnalyze = async (resumeId: string) => {
     setAnalyzingId(resumeId);
     setAnalysis(null);
+    setAnalyzeError(null);
     try {
       const res = await aiApi.analyzeResume(resumeId);
       setAnalysis(res.data.data);
     } catch {
-      alert('Analysis failed. Ensure the resume has parsed text and your API key is set.');
+      setAnalyzeError('Analysis failed. Ensure the resume has parsed text and your API key is set.');
     } finally {
       setAnalyzingId(null);
     }
@@ -82,6 +84,12 @@ export default function ResumePage() {
           Upload and manage your resumes, get AI-powered feedback
         </p>
       </div>
+
+      {error && (
+        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          {error}
+        </div>
+      )}
 
       {/* Upload Form */}
       <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-6">
@@ -158,6 +166,12 @@ export default function ResumePage() {
         <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">
           Your Resumes
         </h2>
+
+        {analyzeError && (
+          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            {analyzeError}
+          </div>
+        )}
 
         {isLoading && resumes.length === 0 ? (
           <div className="space-y-4">

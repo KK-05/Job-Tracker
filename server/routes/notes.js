@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { body } = require('express-validator');
 const authMiddleware = require('../middleware/auth');
 const validate = require('../middleware/validate');
-const { createNote, getNotes } = require('../controllers/noteController');
+const { createNote, getNotes, deleteNote } = require('../controllers/noteController');
 
 router.use(authMiddleware);
 
@@ -17,5 +17,6 @@ router.post(
 );
 
 router.get('/:applicationId', getNotes);
+router.delete('/:id', deleteNote);
 
 module.exports = router;

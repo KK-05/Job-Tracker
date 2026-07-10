@@ -41,6 +41,7 @@ export default function ApplicationDetailPage() {
   // AI state
   const [selectedResume, setSelectedResume] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
   const [matchResult, setMatchResult] = useState<{
     match_score: number;
     missing_skills: string[];
@@ -75,6 +76,15 @@ export default function ApplicationDetailPage() {
     }
   }
 
+  async function handleDeleteNote(noteId: string) {
+    try {
+      await noteApi.delete(noteId);
+      setNotes((prev) => prev.filter((n) => n.id !== noteId));
+    } catch {
+      /* ignore */
+    }
+  }
+
   async function handleStatusUpdate() {
     if (!editStatus) return;
     await updateApplication(id, { status: editStatus as 'Applied' | 'Interview' | 'Offer' | 'Rejected' });
@@ -92,11 +102,12 @@ export default function ApplicationDetailPage() {
     if (!selectedResume) return;
     setAiLoading(true);
     setMatchResult(null);
+    setAiError(null);
     try {
       const res = await aiApi.jobMatch(selectedResume, id);
       setMatchResult(res.data.data);
     } catch {
-      alert('AI analysis failed. Please check your API key.');
+      setAiError('AI analysis failed. Please check your API key and try again.');
     } finally {
       setAiLoading(false);
     }
@@ -247,6 +258,12 @@ export default function ApplicationDetailPage() {
           </button>
         </div>
 
+        {aiError && (
+          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            {aiError}
+          </div>
+        )}
+
         <AIInsightPanel
           matchScore={matchResult?.match_score}
           missing_skills={matchResult?.missing_skills}
@@ -286,8 +303,14 @@ export default function ApplicationDetailPage() {
             notes.map((note) => (
               <div
                 key={note.id}
-                className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700/50"
+                className="group bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700/50 relative"
               >
+                <button
+                  onClick={() => handleDeleteNote(note.id)}
+                  className="absolute top-3 right-3 p-1 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
+                >
+                  <Trash2 size={14} />
+                </button>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   {note.content}
                 </p>

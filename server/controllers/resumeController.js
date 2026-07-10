@@ -1,6 +1,6 @@
 const multer = require('multer');
 const ResumeModel = require('../models/ResumeModel');
-const { uploadToCloudinary } = require('../services/cloudinaryService');
+const { uploadToCloudinary, deleteFromCloudinary } = require('../services/cloudinaryService');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 
@@ -28,11 +28,12 @@ const uploadResume = [
       throw ApiError.badRequest('No file uploaded');
     }
 
-    const { url } = await uploadToCloudinary(req.file.buffer, req.file.originalname);
+    const { url, publicId } = await uploadToCloudinary(req.file.buffer, req.file.originalname);
 
     const resume = await ResumeModel.create({
       user_id: req.user.id,
       file_url: url,
+      public_id: publicId,
       parsed_text: req.body.parsed_text || null,
     });
 
@@ -70,10 +71,15 @@ const updateParsedText = asyncHandler(async (req, res) => {
  * DELETE /api/resume/:id
  */
 const deleteResume = asyncHandler(async (req, res) => {
-  const deleted = await ResumeModel.delete(req.params.id, req.user.id);
-  if (!deleted) {
+  const resume = await ResumeModel.findById(req.params.id);
+  if (!resume || resume.user_id !== req.user.id) {
     throw ApiError.notFound('Resume not found');
   }
+
+  if (resume.public_id) {
+    await deleteFromCloudinary(resume.public_id);
+  }
+  await ResumeModel.delete(req.params.id, req.user.id);
   res.json({ success: true, message: 'Resume deleted' });
 });
 

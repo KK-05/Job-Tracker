@@ -63,7 +63,7 @@ export const useResumeStore = create<ResumeState>((set) => ({
   },
 
   deleteResume: async (id) => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
       await resumeApi.delete(id);
       set((state) => ({

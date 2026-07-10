@@ -29,5 +29,9 @@ async function uploadToCloudinary(fileBuffer, originalName) {
     uploadStream.end(fileBuffer);
   });
 }
+async function deleteFromCloudinary(publicId) {
+  if (!publicId) return;
+  await cloudinary.uploader.destroy(publicId, { resource_type: 'auto' });
+}
 
-module.exports = { uploadToCloudinary, cloudinary };
+module.exports = { uploadToCloudinary, deleteFromCloudinary, cloudinary };

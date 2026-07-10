@@ -1,12 +1,12 @@
 const pool = require('../db');
 
 const ResumeModel = {
-  async create({ user_id, file_url, parsed_text }) {
+  async create({ user_id, file_url, public_id, parsed_text }) {
     const result = await pool.query(
-      `INSERT INTO resumes (user_id, file_url, parsed_text)
-       VALUES ($1, $2, $3)
+      `INSERT INTO resumes (user_id, file_url, public_id, parsed_text)
+       VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [user_id, file_url, parsed_text || null]
+      [user_id, file_url, public_id || null, parsed_text || null]
     );
     return result.rows[0];
   },

@@ -116,7 +116,7 @@ export default function ApplicationDetailPage() {
   if (!currentApplication) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 size={32} className="animate-spin text-violet-500" />
+        <Loader2 size={32} className="animate-spin text-[var(--sage)]" />
       </div>
     );
   }
@@ -126,24 +126,24 @@ export default function ApplicationDetailPage() {
       {/* Back button */}
       <button
         onClick={() => router.push('/applications')}
-        className="flex items-center gap-2 text-sm text-slate-500 hover:text-violet-500 transition-colors"
+        className="flex items-center gap-2 text-sm text-[var(--text-dim)] hover:text-[var(--sage-bright)] transition-colors"
       >
         <ArrowLeft size={16} />
-        Back to Applications
+        Back to applications
       </button>
 
       {/* Main Card */}
-      <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-6">
+      <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-6">
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500/20 to-cyan-500/20 flex items-center justify-center">
-              <Building2 size={28} className="text-violet-500" />
+            <div className="w-14 h-14 rounded-2xl bg-[var(--surface-2)] flex items-center justify-center">
+              <Building2 size={28} className="text-[var(--sage-bright)]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
+              <h1 className="font-display text-2xl font-medium text-[var(--text)]">
                 {currentApplication.company_name}
               </h1>
-              <p className="text-slate-500 dark:text-slate-400">
+              <p className="text-[var(--text-dim)]">
                 {currentApplication.role}
               </p>
             </div>
@@ -155,7 +155,7 @@ export default function ApplicationDetailPage() {
                 <select
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm"
+                  className="px-3 py-2 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] text-sm"
                 >
                   <option value="Applied">Applied</option>
                   <option value="Interview">Interview</option>
@@ -164,7 +164,7 @@ export default function ApplicationDetailPage() {
                 </select>
                 <button
                   onClick={handleStatusUpdate}
-                  className="p-2 rounded-xl bg-violet-500 text-white hover:bg-violet-600"
+                  className="p-2 rounded-xl bg-[var(--sage)] text-[var(--bg)] hover:brightness-110"
                 >
                   <Save size={16} />
                 </button>
@@ -177,7 +177,7 @@ export default function ApplicationDetailPage() {
                     setEditing(true);
                     setEditStatus(currentApplication.status);
                   }}
-                  className="p-2 rounded-xl text-slate-400 hover:text-violet-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
+                  className="p-2 rounded-xl text-[var(--text-dim)] hover:text-[var(--sage-bright)] hover:bg-[var(--surface-2)] transition-all"
                 >
                   <Edit3 size={16} />
                 </button>
@@ -186,7 +186,7 @@ export default function ApplicationDetailPage() {
 
             <button
               onClick={handleDelete}
-              className="p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
+              className="p-2 rounded-xl text-[var(--text-dim)] hover:text-[var(--danger-bright)] hover:bg-[var(--danger)]/10 transition-all"
             >
               <Trash2 size={16} />
             </button>
@@ -194,7 +194,7 @@ export default function ApplicationDetailPage() {
         </div>
 
         {/* Details */}
-        <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mb-6">
+        <div className="flex items-center gap-4 text-sm text-[var(--text-dim)] mb-6">
           <div className="flex items-center gap-1.5">
             <Calendar size={14} />
             Applied:{' '}
@@ -208,11 +208,11 @@ export default function ApplicationDetailPage() {
 
         {/* Job Description */}
         {currentApplication.job_description && (
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-              Job Description
+          <div className="mb-2">
+            <h3 className="text-sm font-semibold text-[var(--text)] mb-2">
+              Job description
             </h3>
-            <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap max-h-48 overflow-y-auto">
+            <div className="bg-[var(--surface-2)] rounded-xl p-4 text-sm text-[var(--text-dim)] whitespace-pre-wrap max-h-48 overflow-y-auto">
               {currentApplication.job_description}
             </div>
           </div>
@@ -220,21 +220,21 @@ export default function ApplicationDetailPage() {
       </div>
 
       {/* AI Job Match Section */}
-      <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-6">
-        <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-800 dark:text-white mb-4">
-          <Sparkles size={20} className="text-violet-500" />
-          AI Job Match
+      <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-6">
+        <h3 className="flex items-center gap-2 font-display text-lg font-medium text-[var(--text)] mb-4">
+          <Sparkles size={20} className="text-[var(--indigo-bright)]" />
+          AI job match
         </h3>
 
         <div className="flex items-end gap-4 mb-4">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1.5">
-              Select Resume
+            <label className="block text-sm font-medium text-[var(--text-dim)] mb-1.5">
+              Select resume
             </label>
             <select
               value={selectedResume}
               onChange={(e) => setSelectedResume(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+              className="w-full px-4 py-3 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-sm text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--sage)]/40"
             >
               <option value="">Choose a resume...</option>
               {resumes.map((r) => (
@@ -247,7 +247,7 @@ export default function ApplicationDetailPage() {
           <button
             onClick={handleJobMatch}
             disabled={!selectedResume || aiLoading}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-600 text-white text-sm font-semibold disabled:opacity-50 hover:from-violet-500 hover:to-cyan-500 transition-all flex items-center gap-2"
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-[var(--indigo)] to-[var(--sage)] text-[var(--bg)] text-sm font-semibold disabled:opacity-50 hover:brightness-110 transition-all flex items-center gap-2"
           >
             {aiLoading ? (
               <Loader2 size={16} className="animate-spin" />
@@ -259,7 +259,7 @@ export default function ApplicationDetailPage() {
         </div>
 
         {aiError && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          <div className="mb-4 p-3 rounded-xl bg-[var(--danger)]/10 border border-[var(--danger)]/25 text-[var(--danger-bright)] text-sm">
             {aiError}
           </div>
         )}
@@ -273,8 +273,8 @@ export default function ApplicationDetailPage() {
       </div>
 
       {/* Notes Section */}
-      <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-6">
-        <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">
+      <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-6">
+        <h3 className="font-display text-lg font-medium text-[var(--text)] mb-4">
           Notes
         </h3>
 
@@ -284,11 +284,11 @@ export default function ApplicationDetailPage() {
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
             placeholder="Add a note..."
-            className="flex-1 px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/40 transition-all"
+            className="flex-1 px-4 py-3 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-sm text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--sage)]/40 transition-all"
           />
           <button
             type="submit"
-            className="px-4 py-3 rounded-xl bg-violet-500 text-white hover:bg-violet-600 transition-colors"
+            className="px-4 py-3 rounded-xl bg-[var(--sage)] text-[var(--bg)] hover:brightness-110 transition-all"
           >
             <Send size={16} />
           </button>
@@ -296,25 +296,25 @@ export default function ApplicationDetailPage() {
 
         <div className="space-y-3">
           {notes.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-4">
+            <p className="text-sm text-[var(--text-faint)] text-center py-4">
               No notes yet. Add your first note above.
             </p>
           ) : (
             notes.map((note) => (
               <div
                 key={note.id}
-                className="group bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700/50 relative"
+                className="group bg-[var(--surface-2)] rounded-xl p-4 border border-[var(--border)] relative"
               >
                 <button
                   onClick={() => handleDeleteNote(note.id)}
-                  className="absolute top-3 right-3 p-1 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
+                  className="absolute top-3 right-3 p-1 rounded-lg text-[var(--text-faint)] hover:text-[var(--danger-bright)] hover:bg-[var(--danger)]/10 opacity-0 group-hover:opacity-100 transition-all"
                 >
                   <Trash2 size={14} />
                 </button>
-                <p className="text-sm text-slate-700 dark:text-slate-300">
+                <p className="text-sm text-[var(--text-dim)]">
                   {note.content}
                 </p>
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs text-[var(--text-faint)] mt-2">
                   {new Date(note.created_at).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',

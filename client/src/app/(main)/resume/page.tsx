@@ -77,30 +77,30 @@ export default function ResumePage() {
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
-          Resume Management
+        <h1 className="font-display text-2xl font-medium text-[var(--text)]">
+          Resume management
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-sm text-[var(--text-dim)] mt-1">
           Upload and manage your resumes, get AI-powered feedback
         </p>
       </div>
 
       {error && (
-        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <div className="p-3 rounded-xl bg-[var(--danger)]/10 border border-[var(--danger)]/25 text-[var(--danger-bright)] text-sm">
           {error}
         </div>
       )}
 
       {/* Upload Form */}
-      <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-6">
-        <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-          <Upload size={20} className="text-violet-500" />
-          Upload Resume
+      <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-6">
+        <h2 className="font-display text-lg font-medium text-[var(--text)] mb-4 flex items-center gap-2">
+          <Upload size={20} className="text-[var(--sage-bright)]" />
+          Upload resume
         </h2>
 
         <form onSubmit={handleUpload} className="space-y-4">
           {/* File Drop Zone */}
-          <label className="flex flex-col items-center justify-center w-full h-40 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 cursor-pointer hover:border-violet-500/50 hover:bg-violet-50/50 dark:hover:bg-violet-500/5 transition-all">
+          <label className="flex flex-col items-center justify-center w-full h-40 rounded-2xl border-2 border-dashed border-[var(--border-hi)] bg-[var(--surface-2)] cursor-pointer hover:border-[var(--sage)]/50 hover:bg-[var(--sage)]/5 transition-all">
             <input
               type="file"
               accept=".pdf,.doc,.docx"
@@ -109,52 +109,52 @@ export default function ResumePage() {
             />
             {file ? (
               <div className="flex items-center gap-3">
-                <FileText size={24} className="text-violet-500" />
-                <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
+                <FileText size={24} className="text-[var(--sage-bright)]" />
+                <span className="text-sm text-[var(--text)] font-medium">
                   {file.name}
                 </span>
               </div>
             ) : (
               <div className="text-center">
-                <Upload size={32} className="text-slate-400 mx-auto mb-2" />
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <Upload size={32} className="text-[var(--text-faint)] mx-auto mb-2" />
+                <p className="text-sm text-[var(--text-dim)]">
                   Click to upload PDF or Word document
                 </p>
-                <p className="text-xs text-slate-400 mt-1">Max 10MB</p>
+                <p className="text-xs text-[var(--text-faint)] mt-1">Max 10MB</p>
               </div>
             )}
           </label>
 
           {/* Parsed Text */}
           <div>
-            <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1.5">
-              Resume Text (for AI analysis)
+            <label className="block text-sm font-medium text-[var(--text-dim)] mb-1.5">
+              Resume text (for AI analysis)
             </label>
             <textarea
               rows={5}
               value={parsedText}
               onChange={(e) => setParsedText(e.target.value)}
               placeholder="Paste your resume text here for AI analysis..."
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40 resize-none transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sage)]/40 resize-none transition-all"
             />
           </div>
 
           <button
             type="submit"
             disabled={!file || uploading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-600 text-white font-semibold text-sm disabled:opacity-50 hover:from-violet-500 hover:to-cyan-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-500/25"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--sage)] to-[#3f6e5f] text-[var(--bg)] font-semibold text-sm disabled:opacity-50 hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-[0_10px_28px_-10px_rgba(91,140,123,0.5)]"
           >
             {uploading ? (
               <Loader2 size={20} className="animate-spin" />
             ) : uploadSuccess ? (
               <>
                 <CheckCircle size={18} />
-                Uploaded Successfully!
+                Uploaded successfully!
               </>
             ) : (
               <>
                 <Upload size={18} />
-                Upload Resume
+                Upload resume
               </>
             )}
           </button>
@@ -163,12 +163,12 @@ export default function ResumePage() {
 
       {/* Resumes List */}
       <div>
-        <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">
-          Your Resumes
+        <h2 className="font-display text-lg font-medium text-[var(--text)] mb-4">
+          Your resumes
         </h2>
 
         {analyzeError && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          <div className="mb-4 p-3 rounded-xl bg-[var(--danger)]/10 border border-[var(--danger)]/25 text-[var(--danger-bright)] text-sm">
             {analyzeError}
           </div>
         )}
@@ -176,36 +176,36 @@ export default function ResumePage() {
         {isLoading && resumes.length === 0 ? (
           <div className="space-y-4">
             {[1, 2].map((i) => (
-              <div key={i} className="h-24 bg-slate-800/50 rounded-2xl animate-pulse" />
+              <div key={i} className="h-24 bg-[var(--surface)] rounded-2xl animate-pulse" />
             ))}
           </div>
         ) : resumes.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-12 text-center">
-            <FileText size={48} className="text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-500 dark:text-slate-400">No resumes uploaded yet.</p>
+          <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-12 text-center">
+            <FileText size={48} className="text-[var(--text-faint)] mx-auto mb-4" />
+            <p className="text-[var(--text-dim)]">No resumes uploaded yet.</p>
           </div>
         ) : (
           <div className="space-y-4">
             {resumes.map((resume) => (
               <div
                 key={resume.id}
-                className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-5"
+                className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-5"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
-                      <FileText size={20} className="text-violet-500" />
+                    <div className="w-10 h-10 rounded-xl bg-[var(--sage)]/10 flex items-center justify-center">
+                      <FileText size={20} className="text-[var(--sage-bright)]" />
                     </div>
                     <div>
                       <a
                         href={resume.file_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm font-medium text-violet-500 hover:text-violet-400 transition-colors"
+                        className="text-sm font-medium text-[var(--sage-bright)] hover:text-[var(--sage)] transition-colors"
                       >
-                        View Resume ↗
+                        View resume ↗
                       </a>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-[var(--text-faint)]">
                         Uploaded {new Date(resume.created_at).toLocaleDateString()}
                       </p>
                     </div>
@@ -216,7 +216,7 @@ export default function ResumePage() {
                       <button
                         onClick={() => handleAnalyze(resume.id)}
                         disabled={analyzingId === resume.id}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-violet-500/10 text-violet-500 text-xs font-semibold hover:bg-violet-500/20 disabled:opacity-50 transition-all"
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--indigo)]/12 text-[var(--indigo-bright)] text-xs font-semibold hover:bg-[var(--indigo)]/20 disabled:opacity-50 transition-all"
                       >
                         {analyzingId === resume.id ? (
                           <Loader2 size={14} className="animate-spin" />
@@ -231,7 +231,7 @@ export default function ResumePage() {
                           setEditingId(resume.id);
                           setEditText(resume.parsed_text || '');
                         }}
-                        className="text-xs text-slate-400 hover:text-violet-500 transition-colors"
+                        className="text-xs text-[var(--text-faint)] hover:text-[var(--sage-bright)] transition-colors"
                       >
                         Add text for AI analysis
                       </button>
@@ -239,7 +239,7 @@ export default function ResumePage() {
 
                     <button
                       onClick={() => deleteResume(resume.id)}
-                      className="p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                      className="p-2 rounded-xl text-[var(--text-faint)] hover:text-[var(--danger-bright)] hover:bg-[var(--danger)]/10 transition-all"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -248,24 +248,24 @@ export default function ResumePage() {
 
                 {/* Edit parsed text */}
                 {editingId === resume.id && (
-                  <div className="mt-3 space-y-3 border-t border-slate-200 dark:border-slate-700 pt-3">
+                  <div className="mt-3 space-y-3 border-t border-[var(--border)] pt-3">
                     <textarea
                       rows={4}
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
                       placeholder="Paste resume text here..."
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40 resize-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sage)]/40 resize-none transition-all"
                     />
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleSaveParsedText(resume.id)}
-                        className="px-4 py-2 rounded-xl bg-violet-500 text-white text-xs font-semibold hover:bg-violet-600 transition-colors"
+                        className="px-4 py-2 rounded-xl bg-[var(--sage)] text-[var(--bg)] text-xs font-semibold hover:brightness-110 transition-colors"
                       >
-                        Save Text
+                        Save text
                       </button>
                       <button
                         onClick={() => setEditingId(null)}
-                        className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                        className="px-4 py-2 rounded-xl bg-[var(--surface-2)] text-[var(--text-dim)] text-xs font-semibold hover:text-[var(--text)] transition-colors"
                       >
                         Cancel
                       </button>
@@ -281,8 +281,8 @@ export default function ResumePage() {
       {/* AI Analysis Results */}
       {analysis && (
         <div>
-          <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">
-            Analysis Results
+          <h2 className="font-display text-lg font-medium text-[var(--text)] mb-4">
+            Analysis results
           </h2>
           <AIInsightPanel analysis={analysis} />
         </div>

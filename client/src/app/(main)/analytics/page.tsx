@@ -31,13 +31,25 @@ interface AnalyticsData {
   status_distribution: { status: string; count: number }[];
 }
 
+// Literal hex values here (not CSS vars) — Recharts renders these as raw
+// SVG attributes, and this keeps chart color resolution unambiguous.
+// Mirrors the tokens in globals.css.
 const STATUS_COLORS: Record<string, string> = {
-  Applied: '#3b82f6',
-  Interview: '#f59e0b',
-  Offer: '#10b981',
-  Rejected: '#ef4444',
+  Applied: '#B3A9E8',
+  Interview: '#F0B679',
+  Offer: '#79AC99',
+  Rejected: '#5B636B',
 };
-const FALLBACK_COLOR = '#8b5cf6';
+const FALLBACK_COLOR = '#7A6BC7';
+const GRID_COLOR = 'rgba(232, 230, 222, 0.08)';
+const AXIS_COLOR = '#5B636B';
+const TOOLTIP_STYLE = {
+  background: '#1A2129',
+  border: '1px solid rgba(232, 230, 222, 0.14)',
+  borderRadius: '12px',
+  fontSize: '12px',
+  color: '#E8E6DE',
+};
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -60,10 +72,10 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-12 bg-slate-800/50 rounded-xl w-48" />
+        <div className="h-12 bg-[var(--surface)] rounded-xl w-48" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-72 bg-slate-800/50 rounded-2xl" />
+            <div key={i} className="h-72 bg-[var(--surface)] rounded-2xl" />
           ))}
         </div>
       </div>
@@ -73,8 +85,8 @@ export default function AnalyticsPage() {
   if (!data) {
     return (
       <div className="text-center py-16">
-        <BarChart3 size={48} className="text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-        <p className="text-slate-500 dark:text-slate-400">
+        <BarChart3 size={48} className="text-[var(--text-faint)] mx-auto mb-4" />
+        <p className="text-[var(--text-dim)]">
           No data available. Start adding applications!
         </p>
       </div>
@@ -83,32 +95,32 @@ export default function AnalyticsPage() {
 
   const rateCards = [
     {
-      label: 'Total Applications',
+      label: 'Total applications',
       value: data.total_applications,
       icon: Briefcase,
-      color: 'text-violet-500',
-      bg: 'bg-violet-500/10',
+      color: 'text-[var(--indigo-bright)]',
+      bg: 'bg-[var(--indigo)]/10',
     },
     {
-      label: 'Interview Rate',
+      label: 'Interview rate',
       value: `${data.interview_rate}%`,
       icon: TrendingUp,
-      color: 'text-amber-500',
-      bg: 'bg-amber-500/10',
+      color: 'text-[var(--amber-bright)]',
+      bg: 'bg-[var(--amber)]/10',
     },
     {
-      label: 'Offer Rate',
+      label: 'Offer rate',
       value: `${data.offer_rate}%`,
       icon: Award,
-      color: 'text-emerald-500',
-      bg: 'bg-emerald-500/10',
+      color: 'text-[var(--sage-bright)]',
+      bg: 'bg-[var(--sage)]/10',
     },
     {
-      label: 'Rejection Rate',
+      label: 'Rejection rate',
       value: `${data.rejection_rate}%`,
       icon: XCircle,
-      color: 'text-red-500',
-      bg: 'bg-red-500/10',
+      color: 'text-[var(--text-dim)]',
+      bg: 'bg-[var(--text-faint)]/10',
     },
   ];
 
@@ -116,8 +128,8 @@ export default function AnalyticsPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Analytics</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+        <h1 className="font-display text-2xl font-medium text-[var(--text)]">Analytics</h1>
+        <p className="text-sm text-[var(--text-dim)] mt-1">
           Visualize your job search progress
         </p>
       </div>
@@ -127,13 +139,13 @@ export default function AnalyticsPage() {
         {rateCards.map((card) => (
           <div
             key={card.label}
-            className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-5"
+            className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-5"
           >
             <div className={`w-10 h-10 rounded-xl ${card.bg} flex items-center justify-center mb-3`}>
               <card.icon size={20} className={card.color} />
             </div>
-            <p className="text-2xl font-bold text-slate-800 dark:text-white">{card.value}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{card.label}</p>
+            <p className="font-display text-2xl font-medium text-[var(--text)]">{card.value}</p>
+            <p className="text-xs text-[var(--text-dim)] mt-1">{card.label}</p>
           </div>
         ))}
       </div>
@@ -141,48 +153,41 @@ export default function AnalyticsPage() {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Applications Per Month */}
-        <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-6">
-          <h3 className="text-base font-semibold text-slate-800 dark:text-white mb-4">
-            Applications Per Month
+        <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-6">
+          <h3 className="font-display text-base font-medium text-[var(--text)] mb-4">
+            Applications per month
           </h3>
           {data.applications_per_month.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <AreaChart data={data.applications_per_month}>
                 <defs>
                   <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#5B8C7B" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#7A6BC7" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="month" stroke="#64748b" fontSize={12} />
-                <YAxis stroke="#64748b" fontSize={12} />
-                <Tooltip
-                  contentStyle={{
-                    background: '#1e293b',
-                    border: '1px solid #334155',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                  }}
-                />
+                <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
+                <XAxis dataKey="month" stroke={AXIS_COLOR} fontSize={12} />
+                <YAxis stroke={AXIS_COLOR} fontSize={12} />
+                <Tooltip contentStyle={TOOLTIP_STYLE} />
                 <Area
                   type="monotone"
                   dataKey="count"
-                  stroke="#8b5cf6"
+                  stroke="#79AC99"
                   fill="url(#areaGradient)"
                   strokeWidth={2}
                 />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-sm text-slate-400 text-center py-12">No data yet</p>
+            <p className="text-sm text-[var(--text-faint)] text-center py-12">No data yet</p>
           )}
         </div>
 
         {/* Status Distribution */}
-        <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-6">
-          <h3 className="text-base font-semibold text-slate-800 dark:text-white mb-4">
-            Status Distribution
+        <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-6">
+          <h3 className="font-display text-base font-medium text-[var(--text)] mb-4">
+            Status distribution
           </h3>
           {data.status_distribution.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
@@ -204,43 +209,27 @@ export default function AnalyticsPage() {
                     />
                   ))}
                 </Pie>
-                <Tooltip
-                  contentStyle={{
-                    background: '#1e293b',
-                    border: '1px solid #334155',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                  }}
-                />
-                <Legend
-                  wrapperStyle={{ fontSize: '12px' }}
-                />
+                <Tooltip contentStyle={TOOLTIP_STYLE} />
+                <Legend wrapperStyle={{ fontSize: '12px', color: '#9AA1A8' }} />
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-sm text-slate-400 text-center py-12">No data yet</p>
+            <p className="text-sm text-[var(--text-faint)] text-center py-12">No data yet</p>
           )}
         </div>
 
         {/* Bar Chart - By Status */}
-        <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-6 lg:col-span-2">
-          <h3 className="text-base font-semibold text-slate-800 dark:text-white mb-4">
-            Applications by Status
+        <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-6 lg:col-span-2">
+          <h3 className="font-display text-base font-medium text-[var(--text)] mb-4">
+            Applications by status
           </h3>
           {data.status_distribution.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={data.status_distribution}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="status" stroke="#64748b" fontSize={12} />
-                <YAxis stroke="#64748b" fontSize={12} />
-                <Tooltip
-                  contentStyle={{
-                    background: '#1e293b',
-                    border: '1px solid #334155',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                  }}
-                />
+                <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
+                <XAxis dataKey="status" stroke={AXIS_COLOR} fontSize={12} />
+                <YAxis stroke={AXIS_COLOR} fontSize={12} />
+                <Tooltip contentStyle={TOOLTIP_STYLE} />
                 <Bar dataKey="count" radius={[8, 8, 0, 0]}>
                   {data.status_distribution.map((_, index) => (
                     <Cell
@@ -252,7 +241,7 @@ export default function AnalyticsPage() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-sm text-slate-400 text-center py-12">No data yet</p>
+            <p className="text-sm text-[var(--text-faint)] text-center py-12">No data yet</p>
           )}
         </div>
       </div>

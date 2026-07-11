@@ -25,53 +25,56 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="w-full max-w-md relative z-10">
-      <div className="bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 p-8 shadow-2xl">
+    <div className="w-full max-w-md">
+      <div className="bg-[var(--surface)] rounded-3xl border border-[var(--border)] p-8 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)]">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
-            Create Account
+          <div className="w-11 h-11 rounded-xl mx-auto mb-4 flex items-center justify-center bg-gradient-to-br from-[var(--sage)] to-[var(--indigo)]">
+            <UserPlus size={20} className="text-[var(--bg)]" />
+          </div>
+          <h1 className="font-display text-3xl font-medium text-[var(--text)]">
+            Create account
           </h1>
-          <p className="text-slate-400 mt-2 text-sm">
-            Start tracking your job applications with AI
+          <p className="text-[var(--text-dim)] mt-2 text-sm">
+            Start tracking your job search with AI
           </p>
         </div>
 
         {/* Error */}
         {error && (
-          <div className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">
+          <div className="mb-6 p-3 rounded-xl bg-[var(--danger)]/10 border border-[var(--danger)]/25 text-[var(--danger-bright)] text-sm text-center">
             {error}
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative">
-            <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+            <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
             <input
               type="text"
               placeholder="Full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all text-sm"
+              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] placeholder-[var(--text-faint)] focus:outline-none focus:ring-2 focus:ring-[var(--sage)]/40 focus:border-[var(--sage)]/50 transition-all text-sm"
             />
           </div>
 
           <div className="relative">
-            <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
             <input
               type="email"
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all text-sm"
+              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] placeholder-[var(--text-faint)] focus:outline-none focus:ring-2 focus:ring-[var(--sage)]/40 focus:border-[var(--sage)]/50 transition-all text-sm"
             />
           </div>
 
           <div className="relative">
-            <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
             <input
               type="password"
               placeholder="Password (min. 8 characters)"
@@ -79,32 +82,32 @@ export default function SignupPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
-              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all text-sm"
+              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] placeholder-[var(--text-faint)] focus:outline-none focus:ring-2 focus:ring-[var(--sage)]/40 focus:border-[var(--sage)]/50 transition-all text-sm"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-600 text-white font-semibold text-sm hover:from-violet-500 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-500/25"
+            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[var(--sage)] to-[#3f6e5f] text-[var(--bg)] font-semibold text-sm hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-[var(--sage)]/50 disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-[0_10px_28px_-10px_rgba(91,140,123,0.5)]"
           >
             {isLoading ? (
               <Loader2 size={20} className="animate-spin" />
             ) : (
               <>
                 <UserPlus size={18} />
-                Create Account
+                Create account
               </>
             )}
           </button>
         </form>
 
         {/* Footer */}
-        <p className="text-center mt-6 text-sm text-slate-400">
+        <p className="text-center mt-6 text-sm text-[var(--text-dim)]">
           Already have an account?{' '}
           <Link
             href="/login"
-            className="text-violet-400 hover:text-violet-300 font-medium transition-colors"
+            className="text-[var(--sage-bright)] hover:text-[var(--sage)] font-medium transition-colors"
           >
             Sign in
           </Link>

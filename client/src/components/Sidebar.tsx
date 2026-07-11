@@ -37,21 +37,24 @@ export default function Sidebar() {
       {/* Mobile toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-slate-800 text-white shadow-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-[var(--surface)] border border-[var(--border-hi)] text-[var(--text)] shadow-lg"
       >
         {collapsed ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       <aside
-        className={`fixed top-0 left-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white z-40 transition-transform duration-300 ease-in-out
-        ${collapsed ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:w-64 w-64 flex flex-col shadow-2xl`}
+        className={`fixed top-0 left-0 h-full bg-[var(--surface)] border-r border-[var(--border)] text-[var(--text)] z-40 transition-transform duration-300 ease-in-out
+        ${collapsed ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:w-64 w-64 flex flex-col`}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-slate-700/50">
-          <h1 className="text-xl font-bold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
-            JobTracker AI
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">AI-Powered Job Search</p>
+        <div className="p-6 border-b border-[var(--border)] flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-gradient-to-br from-[var(--sage)] to-[var(--indigo)] flex-shrink-0">
+            <Briefcase size={16} className="text-[var(--bg)]" />
+          </div>
+          <div>
+            <h1 className="font-display text-lg font-medium leading-tight">JobTracker</h1>
+            <p className="text-xs text-[var(--text-faint)]">AI-powered job search</p>
+          </div>
         </div>
 
         {/* Navigation */}
@@ -66,17 +69,17 @@ export default function Sidebar() {
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group
                   ${
                     isActive
-                      ? 'bg-violet-500/20 text-violet-300 shadow-lg shadow-violet-500/10'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                      ? 'bg-[var(--sage)]/12 text-[var(--sage-bright)]'
+                      : 'text-[var(--text-dim)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]'
                   }`}
               >
                 <item.icon
                   size={20}
-                  className={`transition-colors ${isActive ? 'text-violet-400' : 'text-slate-500 group-hover:text-violet-400'}`}
+                  className={`transition-colors ${isActive ? 'text-[var(--sage-bright)]' : 'text-[var(--text-faint)] group-hover:text-[var(--sage-bright)]'}`}
                 />
                 {item.label}
                 {isActive && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-violet-400" />
+                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[var(--sage-bright)]" />
                 )}
               </Link>
             );
@@ -84,13 +87,13 @@ export default function Sidebar() {
         </nav>
 
         {/* Logout */}
-        <div className="p-4 border-t border-slate-700/50">
+        <div className="p-4 border-t border-[var(--border)]">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-[var(--text-dim)] hover:text-[var(--danger-bright)] hover:bg-[var(--danger)]/10 transition-all duration-200"
           >
             <LogOut size={20} />
-            Sign Out
+            Sign out
           </button>
         </div>
       </aside>
@@ -99,7 +102,7 @@ export default function Sidebar() {
       {collapsed && (
         <div
           onClick={() => setCollapsed(false)}
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/60 z-30 lg:hidden"
         />
       )}
     </>

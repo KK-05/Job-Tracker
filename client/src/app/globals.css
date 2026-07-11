@@ -1,40 +1,98 @@
 @import "tailwindcss";
 
+/* ── Design tokens ─────────────────────────────────────
+   Single source of truth. Every page/component below
+   reads from these instead of hardcoding colors, so the
+   palette can change in one place. */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-}
+  --bg: #0b0f14;
+  --surface: #141a21;
+  --surface-2: #1a2129;
+  --surface-3: #20272f;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
-  }
+  --text: #e8e6de;
+  --text-dim: #9aa1a8;
+  --text-faint: #5b636b;
+
+  --sage: #5b8c7b;
+  --sage-bright: #79ac99;
+  --amber: #d98e4a;
+  --amber-bright: #f0b679;
+  --indigo: #7a6bc7;
+  --indigo-bright: #b3a9e8;
+  --danger: #c97066;
+  --danger-bright: #e0968c;
+
+  --border: rgba(232, 230, 222, 0.08);
+  --border-hi: rgba(232, 230, 222, 0.16);
+
+  --background: var(--bg);
+  --foreground: var(--text);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+.font-display {
+  font-family: var(--font-fraunces), Georgia, serif;
+  letter-spacing: -0.01em;
 }
 
-/* Smooth transitions for all interactive elements */
-a, button {
-  transition: all 0.2s ease;
+/* ── Scrollbar ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--sage); }
+
+a, button { transition: all 0.2s ease; }
+
+/* ── Ambient mesh background ──────────────────────────
+   Shared decorative layer, dropped into the main and
+   auth layouts so every page carries the same "breathing"
+   depth without each page re-implementing it. */
+.ambient-mesh { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.ambient-mesh span {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.28;
+  animation: mesh-drift 24s ease-in-out infinite;
+}
+.ambient-mesh span:nth-child(1) { width: 480px; height: 480px; background: var(--sage); top: -160px; left: -120px; animation-delay: 0s; }
+.ambient-mesh span:nth-child(2) { width: 420px; height: 420px; background: var(--indigo); top: 15%; right: -160px; animation-delay: -8s; }
+.ambient-mesh span:nth-child(3) { width: 360px; height: 360px; background: var(--amber); bottom: -140px; left: 30%; opacity: 0.14; animation-delay: -16s; }
+
+@keyframes mesh-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(24px, -20px) scale(1.06); }
+}
+
+/* ── Shared motion ────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fade-up 0.6s ease forwards; }
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+.animate-breathe { animation: breathe 4.5s ease-in-out infinite; }
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(217, 142, 74, 0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(217, 142, 74, 0); }
+}
+.animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, .ambient-mesh span, .animate-fade-up, .animate-breathe, .animate-pulse-dot {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

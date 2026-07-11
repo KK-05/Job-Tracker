@@ -5,6 +5,7 @@ import { applicationApi } from '@/services/api';
 import { useAuthStore } from '@/features/auth/authStore';
 import ApplicationTimeline from '@/components/ApplicationTimeline';
 import ProgressRing from '@/components/ProgressRing';
+import type { LucideIcon } from 'lucide-react';
 import { Briefcase, TrendingUp, Award, XCircle, Plus, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
@@ -27,7 +28,16 @@ interface Application {
   created_at: string;
 }
 
-const statCards = [
+interface StatCard {
+  key: keyof Analytics;
+  label: string;
+  icon: LucideIcon;
+  accent: string;
+  accentBright: string;
+  rateKey?: keyof Analytics;
+}
+
+const statCards: StatCard[] = [
   {
     key: 'total_applications',
     label: 'Total applications',

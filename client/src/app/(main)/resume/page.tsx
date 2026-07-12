@@ -13,6 +13,19 @@ import {
   CheckCircle,
 } from 'lucide-react';
 
+interface ResumeAnalysis {
+  strengths: string[];
+  weaknesses: string[];
+  suggestions: string[];
+}
+
+interface ResumeInsightRecord {
+  id: string;
+  resume_id: string;
+  analysis: ResumeAnalysis;
+  created_at: string;
+}
+
 export default function ResumePage() {
   const { resumes, fetchResumes, uploadResume, updateParsedText, deleteResume, isLoading, error } =
     useResumeStore();
@@ -24,16 +37,17 @@ export default function ResumePage() {
 
   // AI Analysis state
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
-  const [analysis, setAnalysis] = useState<{
-    strengths: string[];
-    weaknesses: string[];
-    suggestions: string[];
-  } | null>(null);
+  const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
 
   // Editing parsed text
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
+
+  // Past analyses history
+  const [historyOpenId, setHistoryOpenId] = useState<string | null>(null);
+  const [history, setHistory] = useState<ResumeInsightRecord[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   useEffect(() => {
     fetchResumes();
@@ -60,6 +74,11 @@ export default function ResumePage() {
     try {
       const res = await aiApi.analyzeResume(resumeId);
       setAnalysis(res.data.data);
+      // If history for this resume is open, refresh it so the new run shows up
+      if (historyOpenId === resumeId) {
+        const historyRes = await aiApi.getResumeInsights(resumeId);
+        setHistory(historyRes.data.data);
+      }
     } catch {
       setAnalyzeError('Analysis failed. Ensure the resume has parsed text and your API key is set.');
     } finally {
@@ -71,6 +90,23 @@ export default function ResumePage() {
     await updateParsedText(id, editText);
     setEditingId(null);
     setEditText('');
+  };
+
+  const handleToggleHistory = async (resumeId: string) => {
+    if (historyOpenId === resumeId) {
+      setHistoryOpenId(null);
+      return;
+    }
+    setHistoryOpenId(resumeId);
+    setHistoryLoading(true);
+    try {
+      const res = await aiApi.getResumeInsights(resumeId);
+      setHistory(res.data.data);
+    } catch {
+      setHistory([]);
+    } finally {
+      setHistoryLoading(false);
+    }
   };
 
   return (
@@ -238,6 +274,13 @@ export default function ResumePage() {
                     )}
 
                     <button
+                      onClick={() => handleToggleHistory(resume.id)}
+                      className="text-xs text-[var(--text-faint)] hover:text-[var(--indigo-bright)] transition-colors"
+                    >
+                      {historyOpenId === resume.id ? 'Hide history' : 'History'}
+                    </button>
+
+                    <button
                       onClick={() => deleteResume(resume.id)}
                       className="p-2 rounded-xl text-[var(--text-faint)] hover:text-[var(--danger-bright)] hover:bg-[var(--danger)]/10 transition-all"
                     >
@@ -270,6 +313,33 @@ export default function ResumePage() {
                         Cancel
                       </button>
                     </div>
+                  </div>
+                )}
+
+                {/* Past analyses */}
+                {historyOpenId === resume.id && (
+                  <div className="mt-3 border-t border-[var(--border)] pt-3 space-y-2">
+                    {historyLoading ? (
+                      <p className="text-xs text-[var(--text-faint)]">Loading history...</p>
+                    ) : history.length === 0 ? (
+                      <p className="text-xs text-[var(--text-faint)]">No past analyses yet.</p>
+                    ) : (
+                      history.map((h) => (
+                        <button
+                          key={h.id}
+                          onClick={() => setAnalysis(h.analysis)}
+                          className="w-full text-left bg-[var(--surface-2)] rounded-xl p-3 text-xs hover:border-[var(--indigo)]/30 border border-transparent transition-all"
+                        >
+                          <p className="text-[var(--text-faint)] mb-1">
+                            {new Date(h.created_at).toLocaleString()}
+                          </p>
+                          <p className="text-[var(--text-dim)]">
+                            {h.analysis.strengths.length} strengths · {h.analysis.weaknesses.length}{' '}
+                            areas to improve · {h.analysis.suggestions.length} suggestions
+                          </p>
+                        </button>
+                      ))
+                    )}
                   </div>
                 )}
               </div>

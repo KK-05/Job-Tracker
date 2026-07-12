@@ -42,6 +42,9 @@ export default function ApplicationDetailPage() {
   const [selectedResume, setSelectedResume] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [matchHistory, setMatchHistory] = useState<{ id: string; match_score: number; created_at: string }[]>([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [matchResult, setMatchResult] = useState<{
     match_score: number;
     missing_skills: string[];
@@ -106,10 +109,31 @@ export default function ApplicationDetailPage() {
     try {
       const res = await aiApi.jobMatch(selectedResume, id);
       setMatchResult(res.data.data);
+      if (historyOpen) {
+        const historyRes = await aiApi.getJobInsights(id);
+        setMatchHistory(historyRes.data.data);
+      }
     } catch {
       setAiError('AI analysis failed. Please check your API key and try again.');
     } finally {
       setAiLoading(false);
+    }
+  }
+
+  async function toggleHistory() {
+    if (historyOpen) {
+      setHistoryOpen(false);
+      return;
+    }
+    setHistoryOpen(true);
+    setHistoryLoading(true);
+    try {
+      const res = await aiApi.getJobInsights(id);
+      setMatchHistory(res.data.data);
+    } catch {
+      setMatchHistory([]);
+    } finally {
+      setHistoryLoading(false);
     }
   }
 
@@ -270,6 +294,36 @@ export default function ApplicationDetailPage() {
           analysis={matchResult ? { suggestions: matchResult.suggestions } : undefined}
           isLoading={aiLoading}
         />
+
+        <div className="mt-4 pt-4 border-t border-[var(--border)]">
+          <button
+            onClick={toggleHistory}
+            className="text-xs text-[var(--indigo-bright)] hover:text-[var(--indigo)] transition-colors"
+          >
+            {historyOpen ? 'Hide past matches' : 'View past matches'}
+          </button>
+          {historyOpen && (
+            <div className="mt-3 space-y-2">
+              {historyLoading ? (
+                <p className="text-xs text-[var(--text-faint)]">Loading...</p>
+              ) : matchHistory.length === 0 ? (
+                <p className="text-xs text-[var(--text-faint)]">No past matches yet.</p>
+              ) : (
+                matchHistory.map((m) => (
+                  <div
+                    key={m.id}
+                    className="bg-[var(--surface-2)] rounded-xl p-3 text-xs text-[var(--text-dim)] flex items-center justify-between"
+                  >
+                    <span>{new Date(m.created_at).toLocaleString()}</span>
+                    <span className="font-semibold text-[var(--sage-bright)]">
+                      {m.match_score}% match
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Notes Section */}

@@ -67,3 +67,13 @@ CREATE TABLE ai_insights (
 );
 
 CREATE INDEX idx_ai_insights_application ON ai_insights(application_id);
+
+-- ─── Resume Insights ────────────────────────────────────
+CREATE TABLE resume_insights (
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    resume_id   UUID NOT NULL REFERENCES resumes(id) ON DELETE CASCADE,
+    analysis    JSONB NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_resume_insights_resume ON resume_insights(resume_id);

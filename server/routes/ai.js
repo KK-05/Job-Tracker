@@ -2,7 +2,12 @@ const router = require('express').Router();
 const { body } = require('express-validator');
 const authMiddleware = require('../middleware/auth');
 const validate = require('../middleware/validate');
-const { analyzeResume, jobMatch } = require('../controllers/aiController');
+const {
+  analyzeResume,
+  jobMatch,
+  getResumeInsights,
+  getJobInsights,
+} = require('../controllers/aiController');
 
 router.use(authMiddleware);
 
@@ -22,5 +27,8 @@ router.post(
   validate,
   jobMatch
 );
+
+router.get('/resume-insights/:resumeId', getResumeInsights);
+router.get('/job-insights/:applicationId', getJobInsights);
 
 module.exports = router;

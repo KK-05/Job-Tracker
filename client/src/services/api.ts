@@ -84,6 +84,10 @@ export const aiApi = {
     api.post('/ai/analyze-resume', { resume_id }),
   jobMatch: (resume_id: string, application_id: string) =>
     api.post('/ai/job-match', { resume_id, application_id }),
+  getResumeInsights: (resumeId: string) =>
+    api.get(`/ai/resume-insights/${resumeId}`),
+  getJobInsights: (applicationId: string) =>
+    api.get(`/ai/job-insights/${applicationId}`),
 };
 
 export default api;

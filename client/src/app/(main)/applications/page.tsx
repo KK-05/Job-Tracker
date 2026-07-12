@@ -1,18 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useApplicationStore } from '@/features/applications/applicationStore';
 import ApplicationTimeline from '@/components/ApplicationTimeline';
-import { Plus, X, Filter, Loader2 } from 'lucide-react';
+import { Plus, X, Filter, Loader2, Search } from 'lucide-react';
 
 const STATUSES = ['All', 'Applied', 'Interview', 'Offer', 'Rejected'];
 
 export default function ApplicationsPage() {
   const { applications, fetchApplications, createApplication, isLoading } = useApplicationStore();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [filter, setFilter] = useState('All');
   const [showForm, setShowForm] = useState(false);
+
+  const searchQuery = searchParams.get('search') || '';
 
   // Form state
   const [companyName, setCompanyName] = useState('');
@@ -46,10 +49,26 @@ export default function ApplicationsPage() {
     setAppliedDate(new Date().toISOString().split('T')[0]);
   };
 
-  const filtered =
-    filter === 'All'
-      ? applications
-      : applications.filter((a) => a.status === filter);
+  const clearSearch = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('search');
+    router.push(params.toString() ? `/applications?${params.toString()}` : '/applications');
+  };
+
+  const filtered = applications.filter((a) => {
+    const matchesStatus = filter === 'All' || a.status === filter;
+    const matchesSearch =
+      !searchQuery ||
+      a.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.role.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+
+  const emptyMessage = searchQuery
+    ? `No applications match "${searchQuery}".`
+    : filter === 'All'
+      ? 'No applications yet. Click "Add application" to get started!'
+      : `No ${filter.toLowerCase()} applications.`;
 
   return (
     <div className="space-y-6">
@@ -60,7 +79,9 @@ export default function ApplicationsPage() {
             Applications
           </h1>
           <p className="text-sm text-[var(--text-dim)] mt-1">
-            {applications.length} total applications
+            {searchQuery
+              ? `${filtered.length} of ${applications.length} applications match your search`
+              : `${applications.length} total applications`}
           </p>
         </div>
         <button
@@ -71,6 +92,23 @@ export default function ApplicationsPage() {
           Add application
         </button>
       </div>
+
+      {/* Active search indicator */}
+      {searchQuery && (
+        <div className="flex items-center gap-2 text-sm">
+          <Search size={14} className="text-[var(--text-faint)]" />
+          <span className="text-[var(--text-dim)]">
+            Searching for <span className="text-[var(--text)] font-medium">&ldquo;{searchQuery}&rdquo;</span>
+          </span>
+          <button
+            onClick={clearSearch}
+            className="flex items-center gap-1 text-[var(--sage-bright)] hover:text-[var(--sage)] transition-colors"
+          >
+            <X size={14} />
+            Clear
+          </button>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -205,11 +243,7 @@ export default function ApplicationsPage() {
       ) : (
         <ApplicationTimeline
           applications={filtered}
-          emptyMessage={
-            filter === 'All'
-              ? 'No applications yet. Click "Add application" to get started!'
-              : `No ${filter.toLowerCase()} applications.`
-          }
+          emptyMessage={emptyMessage}
         />
       )}
     </div>

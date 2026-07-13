@@ -80,6 +80,28 @@ const ApplicationModel = {
     return result.rowCount > 0;
   },
 
+  // ─── Bulk Operations ────────────────────────────────
+  async bulkUpdateStatus(ids, user_id, status) {
+    const result = await pool.query(
+      `UPDATE applications
+       SET status = $1
+       WHERE user_id = $2 AND id = ANY($3::uuid[])
+       RETURNING *`,
+      [status, user_id, ids]
+    );
+    return result.rows;
+  },
+
+  async bulkDelete(ids, user_id) {
+    const result = await pool.query(
+      `DELETE FROM applications
+       WHERE user_id = $1 AND id = ANY($2::uuid[])
+       RETURNING id`,
+      [user_id, ids]
+    );
+    return result.rows.map((r) => r.id);
+  },
+
   // ─── Analytics Queries ──────────────────────────────
   async getStatusCounts(user_id) {
     const result = await pool.query(
@@ -91,14 +113,16 @@ const ApplicationModel = {
     return result.rows;
   },
 
-  async getMonthlyApplications(user_id) {
+  async getMonthlyApplications(user_id, monthsBack = 12) {
+    // monthsBack = null means "all time" (no date filter)
     const result = await pool.query(
       `SELECT TO_CHAR(applied_date, 'YYYY-MM') as month, COUNT(*)::int as count
-       FROM applications WHERE user_id = $1
+       FROM applications
+       WHERE user_id = $1
+         AND ($2::int IS NULL OR applied_date >= CURRENT_DATE - ($2::int * INTERVAL '1 month'))
        GROUP BY month
-       ORDER BY month ASC
-       LIMIT 12`,
-      [user_id]
+       ORDER BY month ASC`,
+      [user_id, monthsBack]
     );
     return result.rows;
   },

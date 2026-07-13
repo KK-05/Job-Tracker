@@ -35,6 +35,7 @@ const uploadResume = [
       file_url: url,
       public_id: publicId,
       parsed_text: req.body.parsed_text || null,
+      original_filename: req.file.originalname,
     });
 
     res.status(201).json({ success: true, data: resume });
@@ -68,6 +69,24 @@ const updateParsedText = asyncHandler(async (req, res) => {
 });
 
 /**
+ * PUT /api/resume/:id/label
+ */
+const updateLabel = asyncHandler(async (req, res) => {
+  const { label } = req.body;
+  if (typeof label !== 'string') {
+    throw ApiError.badRequest('label is required');
+  }
+
+  const resume = await ResumeModel.findById(req.params.id);
+  if (!resume || resume.user_id !== req.user.id) {
+    throw ApiError.notFound('Resume not found');
+  }
+
+  const updated = await ResumeModel.updateLabel(req.params.id, req.user.id, label.trim());
+  res.json({ success: true, data: updated });
+});
+
+/**
  * DELETE /api/resume/:id
  */
 const deleteResume = asyncHandler(async (req, res) => {
@@ -83,4 +102,4 @@ const deleteResume = asyncHandler(async (req, res) => {
   res.json({ success: true, message: 'Resume deleted' });
 });
 
-module.exports = { uploadResume, getResumes, updateParsedText, deleteResume };
+module.exports = { uploadResume, getResumes, updateParsedText, updateLabel, deleteResume };

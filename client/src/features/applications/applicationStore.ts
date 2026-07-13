@@ -23,6 +23,8 @@ interface ApplicationState {
   createApplication: (data: Partial<Application>) => Promise<void>;
   updateApplication: (id: string, data: Partial<Application>) => Promise<void>;
   deleteApplication: (id: string) => Promise<void>;
+  bulkUpdateStatus: (ids: string[], status: Application['status']) => Promise<void>;
+  bulkDelete: (ids: string[]) => Promise<void>;
 }
 
 export const useApplicationStore = create<ApplicationState>((set) => ({
@@ -94,6 +96,34 @@ export const useApplicationStore = create<ApplicationState>((set) => ({
       }));
     } catch {
       set({ error: 'Failed to delete application', isLoading: false });
+    }
+  },
+
+  bulkUpdateStatus: async (ids, status) => {
+    set({ isLoading: true, error: null });
+    try {
+      await applicationApi.bulkUpdateStatus(ids, status);
+      set((state) => ({
+        applications: state.applications.map((a) =>
+          ids.includes(a.id) ? { ...a, status } : a
+        ),
+        isLoading: false,
+      }));
+    } catch {
+      set({ error: 'Failed to update selected applications', isLoading: false });
+    }
+  },
+
+  bulkDelete: async (ids) => {
+    set({ isLoading: true, error: null });
+    try {
+      await applicationApi.bulkDelete(ids);
+      set((state) => ({
+        applications: state.applications.filter((a) => !ids.includes(a.id)),
+        isLoading: false,
+      }));
+    } catch {
+      set({ error: 'Failed to delete selected applications', isLoading: false });
     }
   },
 }));

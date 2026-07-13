@@ -54,7 +54,12 @@ export const applicationApi = {
   update: (id: string, data: Record<string, unknown>) =>
     api.put(`/applications/${id}`, data),
   delete: (id: string) => api.delete(`/applications/${id}`),
-  getAnalytics: () => api.get('/applications/analytics/summary'),
+  getAnalytics: (range?: string) =>
+    api.get('/applications/analytics/summary', { params: range ? { range } : undefined }),
+  bulkUpdateStatus: (ids: string[], status: string) =>
+    api.put('/applications/bulk/status', { ids, status }),
+  bulkDelete: (ids: string[]) =>
+    api.delete('/applications/bulk', { data: { ids } }),
 };
 
 // ─── Notes ──────────────────────────────────────────────
@@ -75,6 +80,8 @@ export const resumeApi = {
   getAll: () => api.get('/resume'),
   updateParsedText: (id: string, parsed_text: string) =>
     api.put(`/resume/${id}/parsed-text`, { parsed_text }),
+  updateLabel: (id: string, label: string) =>
+    api.put(`/resume/${id}/label`, { label }),
   delete: (id: string) => api.delete(`/resume/${id}`),
 };
 

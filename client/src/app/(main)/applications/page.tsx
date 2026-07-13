@@ -4,16 +4,18 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useApplicationStore } from '@/features/applications/applicationStore';
 import ApplicationTimeline from '@/components/ApplicationTimeline';
-import { Plus, X, Filter, Loader2, Search } from 'lucide-react';
+import { Plus, X, Filter, Loader2, Search, CheckSquare, Square, Trash2 } from 'lucide-react';
 
 const STATUSES = ['All', 'Applied', 'Interview', 'Offer', 'Rejected'];
+const BULK_STATUSES = ['Applied', 'Interview', 'Offer', 'Rejected'] as const;
 
 export default function ApplicationsPage() {
-  const { applications, fetchApplications, createApplication, isLoading } = useApplicationStore();
+  const { applications, fetchApplications, createApplication, bulkUpdateStatus, bulkDelete, isLoading } =
+    useApplicationStore();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [filter, setFilter] = useState('All');
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(searchParams.get('new') === 'true');
 
   const searchQuery = searchParams.get('search') || '';
 
@@ -24,13 +26,15 @@ export default function ApplicationsPage() {
   const [jobDescription, setJobDescription] = useState('');
   const [appliedDate, setAppliedDate] = useState(new Date().toISOString().split('T')[0]);
 
+  // Bulk selection state
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkStatus, setBulkStatus] = useState<typeof BULK_STATUSES[number]>('Applied');
+  const [bulkActionLoading, setBulkActionLoading] = useState(false);
+
   useEffect(() => {
     fetchApplications();
   }, [fetchApplications]);
-
-  useEffect(() => {
-    if (searchParams.get('new') === 'true') setShowForm(true);
-  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +74,34 @@ export default function ApplicationsPage() {
       ? 'No applications yet. Click "Add application" to get started!'
       : `No ${filter.toLowerCase()} applications.`;
 
+  const toggleSelectMode = () => {
+    setSelectMode((prev) => !prev);
+    setSelectedIds([]);
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
+  const handleBulkStatusApply = async () => {
+    if (selectedIds.length === 0) return;
+    setBulkActionLoading(true);
+    await bulkUpdateStatus(selectedIds, bulkStatus);
+    setBulkActionLoading(false);
+    setSelectedIds([]);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`Delete ${selectedIds.length} selected application${selectedIds.length === 1 ? '' : 's'}? This can't be undone.`)) {
+      return;
+    }
+    setBulkActionLoading(true);
+    await bulkDelete(selectedIds);
+    setBulkActionLoading(false);
+    setSelectedIds([]);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -84,13 +116,26 @@ export default function ApplicationsPage() {
               : `${applications.length} total applications`}
           </p>
         </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[var(--sage)] to-[#3f6e5f] text-[var(--bg)] text-sm font-semibold hover:brightness-110 shadow-[0_10px_28px_-10px_rgba(91,140,123,0.5)] transition-all"
-        >
-          <Plus size={18} />
-          Add application
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleSelectMode}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${
+              selectMode
+                ? 'bg-[var(--sage)]/15 text-[var(--sage-bright)] border-[var(--sage)]/30'
+                : 'bg-[var(--surface)] text-[var(--text-dim)] border-[var(--border)] hover:border-[var(--border-hi)] hover:text-[var(--text)]'
+            }`}
+          >
+            {selectMode ? <CheckSquare size={16} /> : <Square size={16} />}
+            {selectMode ? 'Done' : 'Select'}
+          </button>
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[var(--sage)] to-[#3f6e5f] text-[var(--bg)] text-sm font-semibold hover:brightness-110 shadow-[0_10px_28px_-10px_rgba(91,140,123,0.5)] transition-all"
+          >
+            <Plus size={18} />
+            Add application
+          </button>
+        </div>
       </div>
 
       {/* Active search indicator */}
@@ -127,6 +172,44 @@ export default function ApplicationsPage() {
           </button>
         ))}
       </div>
+
+      {/* Bulk action toolbar */}
+      {selectMode && selectedIds.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3 bg-[var(--surface)] border border-[var(--sage)]/30 rounded-xl px-4 py-3">
+          <span className="text-sm text-[var(--text)] font-medium">
+            {selectedIds.length} selected
+          </span>
+
+          <div className="flex items-center gap-2 ml-auto">
+            <select
+              value={bulkStatus}
+              onChange={(e) => setBulkStatus(e.target.value as typeof BULK_STATUSES[number])}
+              className="px-3 py-2 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sage)]/40"
+            >
+              {BULK_STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  Set status: {s}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={handleBulkStatusApply}
+              disabled={bulkActionLoading}
+              className="px-4 py-2 rounded-xl bg-[var(--sage)] text-[var(--bg)] text-sm font-semibold hover:brightness-110 disabled:opacity-50 transition-all"
+            >
+              Apply
+            </button>
+            <button
+              onClick={handleBulkDelete}
+              disabled={bulkActionLoading}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--danger)]/10 text-[var(--danger-bright)] text-sm font-semibold hover:bg-[var(--danger)]/20 disabled:opacity-50 transition-all"
+            >
+              <Trash2 size={14} />
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* New Application Modal */}
       {showForm && (
@@ -244,6 +327,9 @@ export default function ApplicationsPage() {
         <ApplicationTimeline
           applications={filtered}
           emptyMessage={emptyMessage}
+          selectable={selectMode}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
         />
       )}
     </div>

@@ -1,7 +1,25 @@
 const { GoogleGenAI } = require('@google/genai');
+const ApiError = require('../utils/ApiError');
 require('dotenv').config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+/**
+ * Safely parse a JSON response from the AI. Gemini is instructed to return
+ * pure JSON, but occasionally wraps it in markdown fences or returns a
+ * truncated/malformed body — this turns that into a clear operational error
+ * instead of an unhandled SyntaxError bubbling up as a generic 500.
+ */
+function parseAIResponse(content, context) {
+  try {
+    return JSON.parse(content);
+  } catch {
+    console.error(`[AIService] Failed to parse AI response (${context}). Raw content:`, content);
+    throw ApiError.internal(
+      `The AI response for ${context} could not be processed. Please try again.`
+    );
+  }
+}
 
 const AIService = {
   /**
@@ -22,7 +40,7 @@ const AIService = {
     });
 
     const content = response.text.trim();
-    return JSON.parse(content);
+    return parseAIResponse(content, 'resume analysis');
   },
 
   /**
@@ -44,7 +62,7 @@ const AIService = {
     });
 
     const content = response.text.trim();
-    return JSON.parse(content);
+    return parseAIResponse(content, 'job match');
   },
 
   /**
@@ -65,7 +83,7 @@ const AIService = {
     });
 
     const content = response.text.trim();
-    return JSON.parse(content);
+    return parseAIResponse(content, 'suggestion generation');
   }
 };
 

@@ -31,6 +31,13 @@ interface AnalyticsData {
   status_distribution: { status: string; count: number }[];
 }
 
+const RANGE_OPTIONS: { label: string; value: string }[] = [
+  { label: '3M', value: '3' },
+  { label: '6M', value: '6' },
+  { label: '12M', value: '12' },
+  { label: 'All time', value: 'all' },
+];
+
 // Literal hex values here (not CSS vars) — Recharts renders these as raw
 // SVG attributes, and this keeps chart color resolution unambiguous.
 // Mirrors the tokens in globals.css.
@@ -54,11 +61,13 @@ const TOOLTIP_STYLE = {
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [range, setRange] = useState('12');
 
   useEffect(() => {
     async function load() {
+      setLoading(true);
       try {
-        const res = await applicationApi.getAnalytics();
+        const res = await applicationApi.getAnalytics(range);
         setData(res.data.data);
       } catch {
         console.error('Failed to load analytics');
@@ -67,7 +76,7 @@ export default function AnalyticsPage() {
       }
     }
     load();
-  }, []);
+  }, [range]);
 
   if (loading) {
     return (
@@ -134,7 +143,7 @@ export default function AnalyticsPage() {
         </p>
       </div>
 
-      {/* Rate Cards */}
+      {/* Rate Cards — always reflect all-time totals, independent of the chart range below */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {rateCards.map((card) => (
           <div
@@ -154,9 +163,26 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Applications Per Month */}
         <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-6">
-          <h3 className="font-display text-base font-medium text-[var(--text)] mb-4">
-            Applications per month
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-display text-base font-medium text-[var(--text)]">
+              Applications per month
+            </h3>
+            <div className="flex items-center gap-1">
+              {RANGE_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setRange(opt.value)}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
+                    range === opt.value
+                      ? 'bg-[var(--sage)]/15 text-[var(--sage-bright)]'
+                      : 'text-[var(--text-faint)] hover:text-[var(--text-dim)]'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
           {data.applications_per_month.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <AreaChart data={data.applications_per_month}>

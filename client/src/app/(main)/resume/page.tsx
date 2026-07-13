@@ -11,6 +11,7 @@ import {
   Sparkles,
   Loader2,
   CheckCircle,
+  Pencil,
 } from 'lucide-react';
 
 interface ResumeAnalysis {
@@ -26,8 +27,14 @@ interface ResumeInsightRecord {
   created_at: string;
 }
 
+function getDisplayName(resume: { label: string | null; original_filename: string | null; created_at: string }) {
+  if (resume.label) return resume.label;
+  if (resume.original_filename) return resume.original_filename;
+  return `Resume uploaded ${new Date(resume.created_at).toLocaleDateString()}`;
+}
+
 export default function ResumePage() {
-  const { resumes, fetchResumes, uploadResume, updateParsedText, deleteResume, isLoading, error } =
+  const { resumes, fetchResumes, uploadResume, updateParsedText, updateLabel, deleteResume, isLoading, error } =
     useResumeStore();
 
   const [file, setFile] = useState<File | null>(null);
@@ -43,6 +50,10 @@ export default function ResumePage() {
   // Editing parsed text
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
+
+  // Editing display label
+  const [editingLabelId, setEditingLabelId] = useState<string | null>(null);
+  const [labelDraft, setLabelDraft] = useState('');
 
   // Past analyses history
   const [historyOpenId, setHistoryOpenId] = useState<string | null>(null);
@@ -90,6 +101,12 @@ export default function ResumePage() {
     await updateParsedText(id, editText);
     setEditingId(null);
     setEditText('');
+  };
+
+  const handleSaveLabel = async (id: string) => {
+    await updateLabel(id, labelDraft.trim());
+    setEditingLabelId(null);
+    setLabelDraft('');
   };
 
   const handleToggleHistory = async (resumeId: string) => {
@@ -228,26 +245,68 @@ export default function ResumePage() {
                 className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-5"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--sage)]/10 flex items-center justify-center">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-[var(--sage)]/10 flex items-center justify-center flex-shrink-0">
                       <FileText size={20} className="text-[var(--sage-bright)]" />
                     </div>
-                    <div>
-                      <a
-                        href={resume.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-medium text-[var(--sage-bright)] hover:text-[var(--sage)] transition-colors"
-                      >
-                        View resume ↗
-                      </a>
-                      <p className="text-xs text-[var(--text-faint)]">
-                        Uploaded {new Date(resume.created_at).toLocaleDateString()}
-                      </p>
+                    <div className="min-w-0">
+                      {editingLabelId === resume.id ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={labelDraft}
+                            onChange={(e) => setLabelDraft(e.target.value)}
+                            placeholder={resume.original_filename || 'Resume label'}
+                            className="px-2 py-1 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-sm text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--sage)]/40"
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => handleSaveLabel(resume.id)}
+                            className="text-xs text-[var(--sage-bright)] hover:text-[var(--sage)] font-semibold"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingLabelId(null)}
+                            className="text-xs text-[var(--text-faint)] hover:text-[var(--text-dim)]"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-[var(--text)] truncate">
+                            {getDisplayName(resume)}
+                          </span>
+                          <button
+                            onClick={() => {
+                              setEditingLabelId(resume.id);
+                              setLabelDraft(resume.label || '');
+                            }}
+                            className="text-[var(--text-faint)] hover:text-[var(--sage-bright)] transition-colors flex-shrink-0"
+                            title="Edit label"
+                          >
+                            <Pencil size={12} />
+                          </button>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <a
+                          href={resume.file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs font-medium text-[var(--sage-bright)] hover:text-[var(--sage)] transition-colors"
+                        >
+                          View resume ↗
+                        </a>
+                        <span className="text-xs text-[var(--text-faint)]">
+                          · Uploaded {new Date(resume.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     {resume.parsed_text ? (
                       <button
                         onClick={() => handleAnalyze(resume.id)}

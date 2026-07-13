@@ -47,12 +47,14 @@ CREATE INDEX idx_notes_application ON notes(application_id);
 
 -- ─── Resumes ────────────────────────────────────────────
 CREATE TABLE resumes (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    file_url    TEXT NOT NULL,
-    public_id   TEXT,
-    parsed_text TEXT,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id           UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    file_url          TEXT NOT NULL,
+    public_id         TEXT,
+    parsed_text       TEXT,
+    original_filename TEXT,
+    label             TEXT,
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_resumes_user ON resumes(user_id);

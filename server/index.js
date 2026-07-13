@@ -24,9 +24,31 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 
+// ─── CORS ────────────────────────────────────────────────
+// CLIENT_URL accepts a single origin or a comma-separated list, so preview
+// deployments (e.g. Vercel branch previews) can be allowed alongside prod
+// without changing this file. Falls back to localhost for local dev.
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Requests with no Origin header (curl, server-to-server, health checks)
+    // are allowed through — there's no browser same-origin policy to enforce.
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
+
 // ─── Global Middleware ──────────────────────────────────
 app.use(helmet());
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }));
+app.use(cors(corsOptions));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

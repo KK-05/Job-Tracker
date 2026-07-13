@@ -83,14 +83,40 @@ const deleteApplication = asyncHandler(async (req, res) => {
 });
 
 /**
+ * PUT /api/applications/bulk/status
+ * Body: { ids: string[], status: string }
+ */
+const bulkUpdateStatus = asyncHandler(async (req, res) => {
+  const { ids, status } = req.body;
+
+  const updated = await ApplicationModel.bulkUpdateStatus(ids, req.user.id, status);
+  res.json({ success: true, data: updated });
+});
+
+/**
+ * DELETE /api/applications/bulk
+ * Body: { ids: string[] }
+ */
+const bulkDelete = asyncHandler(async (req, res) => {
+  const { ids } = req.body;
+
+  const deletedIds = await ApplicationModel.bulkDelete(ids, req.user.id);
+  res.json({ success: true, data: { deleted: deletedIds } });
+});
+
+/**
  * GET /api/applications/analytics/summary
+ * Query: ?range=3|6|12|all — filters the monthly chart only (rate cards
+ * and status distribution remain all-time for consistency with prior behavior)
  */
 const getAnalytics = asyncHandler(async (req, res) => {
   const userId = req.user.id;
+  const { range } = req.query;
+  const monthsBack = range === 'all' ? null : range ? parseInt(range, 10) : 12;
 
   const [statusCounts, monthly, total] = await Promise.all([
     ApplicationModel.getStatusCounts(userId),
-    ApplicationModel.getMonthlyApplications(userId),
+    ApplicationModel.getMonthlyApplications(userId, monthsBack),
     ApplicationModel.getTotalCount(userId),
   ]);
 
@@ -126,4 +152,6 @@ module.exports = {
   updateApplication,
   deleteApplication,
   getAnalytics,
+  bulkUpdateStatus,
+  bulkDelete,
 };

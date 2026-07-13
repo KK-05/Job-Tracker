@@ -6,6 +6,8 @@ interface Resume {
   user_id: string;
   file_url: string;
   parsed_text: string | null;
+  original_filename: string | null;
+  label: string | null;
   created_at: string;
 }
 
@@ -17,6 +19,7 @@ interface ResumeState {
   fetchResumes: () => Promise<void>;
   uploadResume: (file: File, parsedText?: string) => Promise<void>;
   updateParsedText: (id: string, text: string) => Promise<void>;
+  updateLabel: (id: string, label: string) => Promise<void>;
   deleteResume: (id: string) => Promise<void>;
 }
 
@@ -59,6 +62,19 @@ export const useResumeStore = create<ResumeState>((set) => ({
       }));
     } catch {
       set({ error: 'Failed to update parsed text' });
+    }
+  },
+
+  updateLabel: async (id, label) => {
+    try {
+      await resumeApi.updateLabel(id, label);
+      set((state) => ({
+        resumes: state.resumes.map((r) =>
+          r.id === id ? { ...r, label } : r
+        ),
+      }));
+    } catch {
+      set({ error: 'Failed to update resume label' });
     }
   },
 
